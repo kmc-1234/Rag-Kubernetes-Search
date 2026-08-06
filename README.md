@@ -275,7 +275,7 @@ What it does:
 Create a Docker Hub repository named:
 
 ```text
-rag-kubernetes-search
+kmc173/rag-kubernetes-search
 ```
 
 Then add these GitHub Actions repository secrets:
@@ -285,11 +285,26 @@ DOCKERHUB_USERNAME
 DOCKERHUB_TOKEN
 ```
 
+For this project, set:
+
+```text
+DOCKERHUB_USERNAME=kmc173
+```
+
+Use a Docker Hub access token for `DOCKERHUB_TOKEN`, not your Docker Hub password. The token must have read/write access to `kmc173/rag-kubernetes-search`.
+
+If GitHub Actions fails with `401 Unauthorized`, `insufficient scopes`, or `pull,push`, check these items:
+
+- The Docker Hub repository `kmc173/rag-kubernetes-search` exists.
+- The token belongs to `kmc173`, or to an account with write access to that namespace.
+- The token has read/write permission, not read-only permission.
+- The GitHub repository secrets were saved without extra spaces or quotes.
+
 On every push to `main` or `master`, GitHub Actions publishes:
 
 ```text
-DOCKERHUB_USERNAME/rag-kubernetes-search:<commit-sha>
-DOCKERHUB_USERNAME/rag-kubernetes-search:latest
+kmc173/rag-kubernetes-search:<commit-sha>
+kmc173/rag-kubernetes-search:latest
 ```
 
 Pull requests build the image but do not push it.

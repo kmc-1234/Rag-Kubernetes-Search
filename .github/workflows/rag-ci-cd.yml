@@ -60,6 +60,7 @@ jobs:
         run: |
           test -n "$DOCKERHUB_USERNAME" || { echo "Missing DOCKERHUB_USERNAME repository secret"; exit 1; }
           test -n "$DOCKERHUB_TOKEN" || { echo "Missing DOCKERHUB_TOKEN repository secret"; exit 1; }
+          test "$DOCKERHUB_USERNAME" = "kmc173" || { echo "DOCKERHUB_USERNAME must be kmc173 because IMAGE_NAME is ${IMAGE_NAME}"; exit 1; }
 
       - name: Log in to Docker Hub
         if: github.event_name == 'push'
