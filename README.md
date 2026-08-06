@@ -319,6 +319,8 @@ Pull requests build the image but do not push it.
 
 The workflow runs a deterministic local Sim AI review script in CI and prints the report in the GitHub Actions run summary.
 
+For a detailed step-by-step setup guide, see [SIM_AI_SETUP.md](SIM_AI_SETUP.md).
+
 To view it in GitHub:
 
 1. Open the repository on GitHub.
