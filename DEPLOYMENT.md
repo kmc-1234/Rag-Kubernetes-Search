@@ -174,6 +174,14 @@ kubectl rollout status deployment/rag-kubernetes-search -n rag-kubernetes-search
 
 If the pod is stuck in `ImagePullBackOff`, confirm the image exists in Docker Hub and the repository is public or the cluster has an image pull secret.
 
+If MicroK8s or containerd reports an image unpack error for a versioned tag, confirm the GitHub Actions Docker build uses:
+
+```yaml
+provenance: false
+```
+
+This repo disables Docker provenance attestations so MicroK8s can pull the pushed image tags.
+
 If `/ingest` fails, check pod logs:
 
 ```bash
