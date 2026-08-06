@@ -10,3 +10,4 @@ configMapGenerator:
     namespace: rag-kubernetes-search
     files:
       - embeddings.py=config/embeddings.py
+      - main.py=config/main.py

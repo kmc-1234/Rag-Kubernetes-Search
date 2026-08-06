@@ -55,6 +55,9 @@ spec:
             - name: embeddings-hotfix
               mountPath: /app/app/embeddings.py
               subPath: embeddings.py
+            - name: embeddings-hotfix
+              mountPath: /app/app/main.py
+              subPath: main.py
       volumes:
         - name: chroma-db
           persistentVolumeClaim:
