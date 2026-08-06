@@ -69,6 +69,9 @@ If Sim.ai lets you define the input format, add these fields:
 | `sha` | String | Commit SHA |
 | `report` | String | Markdown Sim AI review report |
 | `agent_prompt` | String | Full ready-to-use prompt for the Sim.ai agent |
+| `prompt` | String | Same value as `agent_prompt`, for easier agent binding |
+| `message` | String | Same value as `agent_prompt`, for easier agent binding |
+| `input` | String | Same value as `agent_prompt`, for easier agent binding |
 
 GitHub Actions sends this payload:
 
@@ -78,7 +81,10 @@ GitHub Actions sends this payload:
   "branch": "main",
   "sha": "commit-sha",
   "report": "Sim AI review markdown report",
-  "agent_prompt": "Full prompt for Agent 1"
+  "agent_prompt": "Full prompt for Agent 1",
+  "prompt": "Full prompt for Agent 1",
+  "message": "Full prompt for Agent 1",
+  "input": "Full prompt for Agent 1"
 }
 ```
 
@@ -96,6 +102,14 @@ The message should contain the actual variable chip for:
 
 ```text
 Webhook Trigger -> Output -> agent_prompt
+```
+
+If `agent_prompt` is hard to find in the picker, use any one of these equivalent webhook output fields:
+
+```text
+Webhook Trigger -> Output -> prompt
+Webhook Trigger -> Output -> message
+Webhook Trigger -> Output -> input
 ```
 
 Do not type placeholder text like `[Webhook Trigger 1 output report]`. If the value appears as plain text in the Sim.ai log, it was not mapped correctly.

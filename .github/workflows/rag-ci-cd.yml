@@ -164,24 +164,28 @@ jobs:
             --arg repository "${{ github.repository }}" \
             --arg branch "${{ github.ref_name }}" \
             --arg sha "${{ github.sha }}" \
-            '{
+            '(
+              "You are reviewing a GitHub Actions CI/CD report for a RAG Kubernetes documentation search project.\n\n" +
+              "Repository: " + $repository + "\n" +
+              "Branch: " + $branch + "\n" +
+              "Commit SHA: " + $sha + "\n\n" +
+              "Sim AI Review Report:\n" + $report + "\n\n" +
+              "Return a short deployment decision in this exact format:\n\n" +
+              "Status: Ready | Not Ready\n" +
+              "Risk: Low | Medium | High\n" +
+              "Docker image: Ready to publish | Not ready\n" +
+              "Main finding: one short sentence\n" +
+              "Next action: one short sentence"
+            ) as $agent_prompt |
+            {
               repository: $repository,
               branch: $branch,
               sha: $sha,
               report: $report,
-              agent_prompt: (
-                "You are reviewing a GitHub Actions CI/CD report for a RAG Kubernetes documentation search project.\n\n" +
-                "Repository: " + $repository + "\n" +
-                "Branch: " + $branch + "\n" +
-                "Commit SHA: " + $sha + "\n\n" +
-                "Sim AI Review Report:\n" + $report + "\n\n" +
-                "Return a short deployment decision in this exact format:\n\n" +
-                "Status: Ready | Not Ready\n" +
-                "Risk: Low | Medium | High\n" +
-                "Docker image: Ready to publish | Not ready\n" +
-                "Main finding: one short sentence\n" +
-                "Next action: one short sentence"
-              )
+              agent_prompt: $agent_prompt,
+              prompt: $agent_prompt,
+              message: $agent_prompt,
+              input: $agent_prompt
             }')
           curl -X POST \
             -H 'Content-type: application/json' \

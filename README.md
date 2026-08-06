@@ -356,7 +356,10 @@ The GitHub Actions payload sent to Sim.ai contains:
   "branch": "main",
   "sha": "commit-sha",
   "report": "Sim AI review markdown report",
-  "agent_prompt": "Full ready-to-use prompt for Agent 1"
+  "agent_prompt": "Full ready-to-use prompt for Agent 1",
+  "prompt": "Full ready-to-use prompt for Agent 1",
+  "message": "Full ready-to-use prompt for Agent 1",
+  "input": "Full ready-to-use prompt for Agent 1"
 }
 ```
 
