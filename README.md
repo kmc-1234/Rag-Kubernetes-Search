@@ -232,6 +232,18 @@ curl -X POST http://127.0.0.1:8000/ask \
   -d '{"question":"How do I troubleshoot a PVC stuck in Pending?"}'
 ```
 
+## Kubernetes Deployment
+
+Kubernetes manifests are available in `k8s/`.
+
+Deploy:
+
+```bash
+kubectl apply -k k8s
+```
+
+For full deployment steps, service access, document ingestion, and Sim.ai usage, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## GitHub Actions CI/CD
 
 This repository includes a GitHub Actions workflow at `.github/workflows/rag-ci-cd.yml`.

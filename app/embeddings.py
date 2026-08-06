@@ -12,7 +12,7 @@ class ChromaDefaultEmbeddings(Embeddings):
         self._embedding_function = DefaultEmbeddingFunction()
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        return [list(vector) for vector in self._embedding_function(texts)]
+        return [[float(value) for value in vector] for vector in self._embedding_function(texts)]
 
     def embed_query(self, text: str) -> list[float]:
         return self.embed_documents([text])[0]

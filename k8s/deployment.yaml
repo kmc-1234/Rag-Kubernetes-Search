@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-kubernetes-search
+  namespace: rag-kubernetes-search
+  labels:
+    app: rag-kubernetes-search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-kubernetes-search
+  template:
+    metadata:
+      labels:
+        app: rag-kubernetes-search
+    spec:
+      containers:
+        - name: api
+          image: kmc173/rag-kubernetes-search:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: DOCS_DIR
+              value: /app/docs
+            - name: CHROMA_DIR
+              value: /data/chroma_db
+            - name: EMBEDDING_PROVIDER
+              value: local
+            - name: COLLECTION_NAME
+              value: kubernetes_docs
+            - name: TOP_K
+              value: "5"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: chroma-db
+              mountPath: /data/chroma_db
+      volumes:
+        - name: chroma-db
+          persistentVolumeClaim:
+            claimName: chroma-db
