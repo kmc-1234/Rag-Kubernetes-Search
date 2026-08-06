@@ -14,7 +14,7 @@ app = FastAPI(
 
 @app.get("/", include_in_schema=False)
 def root() -> HTMLResponse:
-    return HTMLResponse(
+    page = HTMLResponse(
         """
 <!doctype html>
 <html lang="en">
@@ -254,8 +254,10 @@ def root() -> HTMLResponse:
   </script>
 </body>
 </html>
-        """
+        """,
     )
+    page.headers["Cache-Control"] = "no-store, max-age=0"
+    return page
 
 
 @app.get("/health")
