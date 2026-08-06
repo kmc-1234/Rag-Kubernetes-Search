@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: kmc173/rag-kubernetes-search:4aca5e9dff65
+          image: kmc173/rag-kubernetes-search:c29344932551
           imagePullPolicy: Always
           ports:
             - name: http
