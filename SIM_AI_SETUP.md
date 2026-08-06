@@ -68,6 +68,7 @@ If Sim.ai lets you define the input format, add these fields:
 | `branch` | String | Branch that triggered the workflow |
 | `sha` | String | Commit SHA |
 | `report` | String | Markdown Sim AI review report |
+| `agent_prompt` | String | Full ready-to-use prompt for the Sim.ai agent |
 
 GitHub Actions sends this payload:
 
@@ -76,7 +77,8 @@ GitHub Actions sends this payload:
   "repository": "kmc-1234/Rag-Kubernetes-Search",
   "branch": "main",
   "sha": "commit-sha",
-  "report": "Sim AI review markdown report"
+  "report": "Sim AI review markdown report",
+  "agent_prompt": "Full prompt for Agent 1"
 }
 ```
 
@@ -88,7 +90,17 @@ Recommended simple setup:
 
 1. Add an AI / LLM block after the webhook.
 2. Connect `Webhook Trigger` to the AI block.
-3. Use a prompt like this:
+3. In the agent message, insert the webhook output field named `agent_prompt` using Sim.ai's variable picker.
+
+The message should contain the actual variable chip for:
+
+```text
+Webhook Trigger -> Output -> agent_prompt
+```
+
+Do not type placeholder text like `[Webhook Trigger 1 output report]`. If the value appears as plain text in the Sim.ai log, it was not mapped correctly.
+
+Alternative manual prompt:
 
 ```text
 Review this GitHub Actions CI report.

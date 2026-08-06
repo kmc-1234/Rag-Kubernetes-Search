@@ -355,7 +355,8 @@ The GitHub Actions payload sent to Sim.ai contains:
   "repository": "kmc-1234/Rag-Kubernetes-Search",
   "branch": "main",
   "sha": "commit-sha",
-  "report": "Sim AI review markdown report"
+  "report": "Sim AI review markdown report",
+  "agent_prompt": "Full ready-to-use prompt for Agent 1"
 }
 ```
 
