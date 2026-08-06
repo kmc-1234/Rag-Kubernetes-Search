@@ -132,6 +132,7 @@ jobs:
     needs: validate
     env:
       SIM_AI_WEBHOOK_URL: ${{ secrets.SIM_AI_WEBHOOK_URL }}
+      SIM_AI_AUTH_TOKEN: ${{ secrets.SIM_AI_AUTH_TOKEN }}
 
     steps:
       - name: Checkout
@@ -157,13 +158,18 @@ jobs:
       - name: Send review to Sim.ai
         if: env.SIM_AI_WEBHOOK_URL != ''
         run: |
+          test -n "$SIM_AI_AUTH_TOKEN" || { echo "Missing SIM_AI_AUTH_TOKEN repository secret because Sim.ai webhook authentication is enabled"; exit 1; }
           payload=$(jq -n \
             --rawfile report artifacts/sim-ai-review.md \
             --arg repository "${{ github.repository }}" \
             --arg branch "${{ github.ref_name }}" \
             --arg sha "${{ github.sha }}" \
             '{repository: $repository, branch: $branch, sha: $sha, report: $report}')
-          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SIM_AI_WEBHOOK_URL"
+          curl -X POST \
+            -H 'Content-type: application/json' \
+            -H "Authorization: Bearer $SIM_AI_AUTH_TOKEN" \
+            --data "$payload" \
+            "$SIM_AI_WEBHOOK_URL"
 
   generate_release_notes:
     name: Generate Release Notes

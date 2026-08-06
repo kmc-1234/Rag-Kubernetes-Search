@@ -327,20 +327,24 @@ To view it in GitHub:
 4. Open the `Sim AI Review` job.
 5. Check the job summary or download the `sim-ai-review` artifact.
 
-To send that review report to the Sim.ai UI, add this GitHub Actions repository secret:
+To send that review report to the Sim.ai UI, add these GitHub Actions repository secrets:
 
 ```text
 SIM_AI_WEBHOOK_URL
+SIM_AI_AUTH_TOKEN
 ```
 
 In Sim.ai:
 
 1. Create or open a workflow.
 2. Add a `Webhook` trigger as the workflow entry point.
-3. Deploy the workflow.
+3. Keep `Require Authentication` enabled.
 4. Copy the generated webhook URL.
-5. Save that URL as the GitHub secret `SIM_AI_WEBHOOK_URL`.
-6. Push a commit and then check the Sim.ai workflow `Logs` to see the incoming run.
+5. Copy the webhook `Authentication Token`.
+6. Deploy the workflow.
+7. Save the webhook URL as the GitHub secret `SIM_AI_WEBHOOK_URL`.
+8. Save the authentication token as the GitHub secret `SIM_AI_AUTH_TOKEN`.
+9. Push a commit and then check the Sim.ai workflow `Logs` to see the incoming run.
 
 The GitHub Actions payload sent to Sim.ai contains:
 
