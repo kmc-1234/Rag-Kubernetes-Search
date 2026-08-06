@@ -199,42 +199,53 @@ def root() -> HTMLResponse:
     const sourcesEl = document.getElementById("sources");
 
     async function ingestDocs() {
-      statusEl.textContent = "Ingesting documents...";
-      const response = await fetch("/ingest", { method: "POST" });
-      const data = await response.json();
-      if (!response.ok) throw new Error(JSON.stringify(data));
-      statusEl.textContent = `Indexed ${data.documents} documents into ${data.chunks} chunks.`;
+      try {
+        statusEl.textContent = "Ingesting documents...";
+        const response = await fetch("/ingest", { method: "POST" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || JSON.stringify(data));
+        statusEl.textContent = `Indexed ${data.documents} documents into ${data.chunks} chunks.`;
+      } catch (error) {
+        statusEl.textContent = `Ingestion failed: ${error.message}`;
+      }
     }
 
     async function askQuestion() {
-      const question = document.getElementById("question").value.trim();
-      const topK = Number(document.getElementById("topK").value || 5);
-      if (!question) {
-        statusEl.textContent = "Enter a question first.";
-        return;
+      try {
+        const question = document.getElementById("question").value.trim();
+        const topK = Number(document.getElementById("topK").value || 5);
+        if (!question) {
+          statusEl.textContent = "Enter a question first.";
+          return;
+        }
+        statusEl.textContent = "Searching documentation...";
+        answerEl.textContent = "";
+        sourcesEl.innerHTML = "";
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, top_k: topK })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || JSON.stringify(data));
+        answerEl.textContent = data.answer;
+        for (const source of data.sources) {
+          const item = document.createElement("div");
+          const title = document.createElement("strong");
+          const preview = document.createElement("p");
+          item.className = "source";
+          title.textContent = `${source.source} · chunk ${source.chunk}`;
+          preview.textContent = source.preview;
+          item.append(title, preview);
+          sourcesEl.appendChild(item);
+        }
+        statusEl.textContent = data.sources.length
+          ? `Returned ${data.sources.length} source matches.`
+          : "No sources found. Run Ingest Docs, then ask again.";
+      } catch (error) {
+        answerEl.textContent = "";
+        statusEl.textContent = `Ask failed: ${error.message}`;
       }
-      statusEl.textContent = "Searching documentation...";
-      answerEl.textContent = "";
-      sourcesEl.innerHTML = "";
-      const response = await fetch("/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, top_k: topK })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(JSON.stringify(data));
-      answerEl.textContent = data.answer;
-      for (const source of data.sources) {
-        const item = document.createElement("div");
-        const title = document.createElement("strong");
-        const preview = document.createElement("p");
-        item.className = "source";
-        title.textContent = `${source.source} · chunk ${source.chunk}`;
-        preview.textContent = source.preview;
-        item.append(title, preview);
-        sourcesEl.appendChild(item);
-      }
-      statusEl.textContent = `Returned ${data.sources.length} source matches.`;
     }
 
     window.addEventListener("error", (event) => {
