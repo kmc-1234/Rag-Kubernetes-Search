@@ -247,7 +247,7 @@ Validate Application
     |
 Sim AI Review
     |
-Review Deployment
+Build and Push Docker Image
     |
 Generate Release Notes
     |
@@ -266,6 +266,7 @@ What it does:
 - Runs a deterministic simulated AI review with `scripts/sim_ai_review.py`.
 - Builds the Docker image.
 - Pushes the Docker image to Docker Hub on `main` or `master` push builds.
+- Publishes Docker tags for every pushed commit: `vN`, commit SHA, and `latest`.
 - Uploads deployment review notes as a workflow artifact.
 - Generates release notes with `scripts/generate_release_notes.py` on push builds.
 - Generates failure analysis with `scripts/analyze_failure.py` if the workflow fails.
@@ -303,18 +304,53 @@ If GitHub Actions fails with `401 Unauthorized`, `insufficient scopes`, or `pull
 On every push to `main` or `master`, GitHub Actions publishes:
 
 ```text
+kmc173/rag-kubernetes-search:v1
+kmc173/rag-kubernetes-search:v2
+kmc173/rag-kubernetes-search:v3
 kmc173/rag-kubernetes-search:<commit-sha>
 kmc173/rag-kubernetes-search:latest
 ```
+
+The `vN` tag is calculated from the number of commits in the repository with `git rev-list --count HEAD`. For example, the first commit is `v1`, the second commit is `v2`, and so on.
 
 Pull requests build the image but do not push it.
 
 ### Enable Sim.ai
 
-The workflow runs a deterministic local Sim AI review script in CI. To send that review report to Sim.ai, add this GitHub Actions repository secret:
+The workflow runs a deterministic local Sim AI review script in CI and prints the report in the GitHub Actions run summary.
+
+To view it in GitHub:
+
+1. Open the repository on GitHub.
+2. Go to `Actions`.
+3. Open the latest `RAG CI/CD` run.
+4. Open the `Sim AI Review` job.
+5. Check the job summary or download the `sim-ai-review` artifact.
+
+To send that review report to the Sim.ai UI, add this GitHub Actions repository secret:
 
 ```text
 SIM_AI_WEBHOOK_URL
+```
+
+In Sim.ai:
+
+1. Create or open a workflow.
+2. Add a `Webhook` trigger as the workflow entry point.
+3. Deploy the workflow.
+4. Copy the generated webhook URL.
+5. Save that URL as the GitHub secret `SIM_AI_WEBHOOK_URL`.
+6. Push a commit and then check the Sim.ai workflow `Logs` to see the incoming run.
+
+The GitHub Actions payload sent to Sim.ai contains:
+
+```json
+{
+  "repository": "kmc-1234/Rag-Kubernetes-Search",
+  "branch": "main",
+  "sha": "commit-sha",
+  "report": "Sim AI review markdown report"
+}
 ```
 
 The Sim.ai handoff happens after validation and before Docker image build/push. That is the best place to use it because it can review the app structure, docs, Dockerfile, and release readiness before anything is published.

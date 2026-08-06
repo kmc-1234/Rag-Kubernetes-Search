@@ -69,6 +69,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
 
+      - name: Calculate image version
+        if: github.event_name == 'push'
+        id: image_version
+        run: |
+          commit_count="$(git rev-list --count HEAD)"
+          echo "version=v${commit_count}" >> "$GITHUB_OUTPUT"
+          echo "Image version: v${commit_count}"
+
       - name: Docker metadata
         if: github.event_name == 'push'
         id: meta
@@ -77,6 +85,7 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=sha,prefix=
+            type=raw,value=${{ steps.image_version.outputs.version }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build image on pull request
@@ -103,6 +112,7 @@ jobs:
             echo "# Deployment Review"
             echo
             echo "- Image repository: \`${{ env.IMAGE_NAME }}\`"
+            echo "- Version tag: \`${{ steps.image_version.outputs.version || 'pull-request-build' }}\`"
             echo "- Commit tag: \`${{ github.sha }}\`"
             echo "- Commit: \`${{ github.sha }}\`"
             echo "- Branch: \`${{ github.ref_name }}\`"
@@ -134,6 +144,9 @@ jobs:
 
       - name: Run simulated AI review
         run: python scripts/sim_ai_review.py
+
+      - name: Add Sim AI review to workflow summary
+        run: cat artifacts/sim-ai-review.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Sim AI review
         uses: actions/upload-artifact@v4
