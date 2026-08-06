@@ -52,7 +52,13 @@ spec:
           volumeMounts:
             - name: chroma-db
               mountPath: /data/chroma_db
+            - name: embeddings-hotfix
+              mountPath: /app/app/embeddings.py
+              subPath: embeddings.py
       volumes:
         - name: chroma-db
           persistentVolumeClaim:
             claimName: chroma-db
+        - name: embeddings-hotfix
+          configMap:
+            name: embeddings-hotfix

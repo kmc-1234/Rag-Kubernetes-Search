@@ -41,6 +41,8 @@ Apply the manifests:
 kubectl apply -k k8s
 ```
 
+The manifests include a ConfigMap-mounted `k8s/config/embeddings.py` file so the deployed pod uses the fixed embedding adapter even if Docker Hub still has an older `latest` image.
+
 Check rollout:
 
 ```bash
