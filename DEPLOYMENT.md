@@ -10,14 +10,16 @@ Git push
   -> Validate app
   -> Sim.ai review
   -> Build and push Docker image
-  -> Deploy image to Kubernetes
+  -> Update Kubernetes image tag in Git
+  -> Argo CD syncs Git to Kubernetes
   -> Ingest docs
-  -> Ask questions through the API
+  -> Ask questions through the browser UI or API
 ```
 
 ## Prerequisites
 
 - Kubernetes cluster access with `kubectl`
+- Optional but recommended for GitOps: Argo CD installed in the cluster
 - Docker image available in Docker Hub:
 
 ```text
@@ -31,6 +33,27 @@ DOCKERHUB_USERNAME=kmc173
 DOCKERHUB_TOKEN=<Docker Hub read/write token>
 SIM_AI_WEBHOOK_URL=<Sim.ai webhook URL>
 SIM_AI_AUTH_TOKEN=<Sim.ai webhook auth token>
+```
+
+## Browser UI
+
+The app serves a simple UI at the root route:
+
+```text
+http://<node-ip>:<node-port>
+```
+
+Use it to:
+
+- Run ingestion.
+- Ask questions.
+- View answers.
+- View source chunks.
+
+Swagger remains available at:
+
+```text
+http://<node-ip>:<node-port>/docs
 ```
 
 ## Deploy to Kubernetes
@@ -84,7 +107,68 @@ kubectl port-forward svc/rag-kubernetes-search 8000:8000 -n rag-kubernetes-searc
 Then open:
 
 ```text
+http://127.0.0.1:8000
+```
+
+Swagger is available at:
+
+```text
 http://127.0.0.1:8000/docs
+```
+
+## GitOps Auto Deployment with Argo CD
+
+Apply this once after Argo CD is installed:
+
+```bash
+kubectl apply -f k8s/gitops/argocd-application.yaml
+```
+
+The Argo CD Application watches:
+
+```text
+https://github.com/kmc-1234/Rag-Kubernetes-Search.git
+path: k8s
+branch: main
+```
+
+On every push to `main`, GitHub Actions does this:
+
+1. Validate Python app imports and syntax.
+2. Send the Sim.ai review payload.
+3. Build and push a Docker image to Docker Hub.
+4. Tag the image with:
+
+```text
+kmc173/rag-kubernetes-search:<short-commit-sha>
+kmc173/rag-kubernetes-search:vN
+kmc173/rag-kubernetes-search:latest
+```
+
+5. Commit the immutable short-SHA image tag into `k8s/deployment.yaml`.
+6. Argo CD detects that Git commit and syncs Kubernetes.
+
+The manifest update commit includes `[skip ci]` to prevent an infinite build loop.
+
+Check Argo CD sync from Kubernetes:
+
+```bash
+kubectl get applications -n argocd
+kubectl describe application rag-kubernetes-search -n argocd
+```
+
+Check which image is running:
+
+```bash
+kubectl get deployment rag-kubernetes-search \
+  -n rag-kubernetes-search \
+  -o jsonpath='{.spec.template.spec.containers[0].image}'
+```
+
+Check rollout:
+
+```bash
+kubectl rollout status deployment/rag-kubernetes-search -n rag-kubernetes-search
 ```
 
 ## Ingest Documents

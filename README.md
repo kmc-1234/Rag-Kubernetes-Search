@@ -124,6 +124,12 @@ uvicorn app.main:app --reload
 http://127.0.0.1:8000/docs
 ```
 
+Open the browser UI:
+
+```text
+http://127.0.0.1:8000
+```
+
 ## Add Documentation
 
 Put Markdown, text, or reStructuredText files under `docs/`.
@@ -200,6 +206,17 @@ Use `/search` when you only want matching chunks:
 curl "http://127.0.0.1:8000/search?q=PVC%20stuck%20pending&top_k=3"
 ```
 
+## Browser UI
+
+The root route `/` serves a small web UI for normal usage:
+
+- Run document ingestion.
+- Ask a Kubernetes documentation question.
+- View generated or extractive answers.
+- Review source chunks returned by the RAG search.
+
+The API docs remain available at `/docs`.
+
 ## Docker Setup
 
 1. Build the image:
@@ -261,6 +278,10 @@ Sim AI Review
     |
 Build and Push Docker Image
     |
+Update GitOps Manifest
+    |
+Argo CD Syncs Kubernetes
+    |
 Generate Release Notes
     |
 Analyze Failure
@@ -278,7 +299,9 @@ What it does:
 - Runs a deterministic simulated AI review with `scripts/sim_ai_review.py`.
 - Builds the Docker image.
 - Pushes the Docker image to Docker Hub on `main` or `master` push builds.
-- Publishes Docker tags for every pushed commit: `vN`, commit SHA, and `latest`.
+- Publishes Docker tags for every pushed commit: `vN`, short commit SHA, and `latest`.
+- Commits the new short-SHA image tag back into `k8s/deployment.yaml`.
+- Lets Argo CD sync that Git manifest into the Kubernetes cluster.
 - Uploads deployment review notes as a workflow artifact.
 - Generates release notes with `scripts/generate_release_notes.py` on push builds.
 - Generates failure analysis with `scripts/analyze_failure.py` if the workflow fails.
@@ -319,13 +342,41 @@ On every push to `main` or `master`, GitHub Actions publishes:
 kmc173/rag-kubernetes-search:v1
 kmc173/rag-kubernetes-search:v2
 kmc173/rag-kubernetes-search:v3
-kmc173/rag-kubernetes-search:<commit-sha>
+kmc173/rag-kubernetes-search:<short-commit-sha>
 kmc173/rag-kubernetes-search:latest
 ```
 
 The `vN` tag is calculated from the number of commits in the repository with `git rev-list --count HEAD`. For example, the first commit is `v1`, the second commit is `v2`, and so on.
 
 Pull requests build the image but do not push it.
+
+### Enable GitOps Auto Deployment
+
+This repository includes an Argo CD Application manifest:
+
+```text
+k8s/gitops/argocd-application.yaml
+```
+
+After Argo CD is installed in the cluster, apply the Application once:
+
+```bash
+kubectl apply -f k8s/gitops/argocd-application.yaml
+```
+
+After that, the automatic deployment flow is:
+
+```text
+Commit push
+  -> GitHub Actions validates app
+  -> Sim.ai reviews readiness
+  -> Docker image is built and pushed
+  -> k8s/deployment.yaml is updated with the new image tag
+  -> Argo CD sees the Git change
+  -> Argo CD syncs the new image into the pod
+```
+
+The manifest update commit uses `[skip ci]` so it does not start another image build loop.
 
 ### Enable Sim.ai
 
