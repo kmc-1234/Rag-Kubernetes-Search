@@ -93,6 +93,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64
           push: false
           provenance: false
           tags: rag-kubernetes-search:${{ github.sha }}
@@ -102,6 +103,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64
           push: true
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}

@@ -182,6 +182,14 @@ provenance: false
 
 This repo disables Docker provenance attestations so MicroK8s can pull the pushed image tags.
 
+The GitHub Actions Docker build is pinned to:
+
+```text
+linux/amd64
+```
+
+That matches the current Kubernetes node architecture.
+
 If `/ingest` fails, check pod logs:
 
 ```bash
