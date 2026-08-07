@@ -10,6 +10,7 @@ from app.config import (
     LLM_TIMEOUT_SECONDS,
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
+    OLLAMA_NUM_PREDICT,
     OPENAI_CHAT_MODEL,
 )
 from app.prompts import SYSTEM_PROMPT, build_prompt
@@ -58,6 +59,10 @@ def generate_ollama_answer(question: str, context: str) -> str:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": build_prompt(question=question, context=context)},
         ],
+        "options": {
+            "temperature": 0.2,
+            "num_predict": OLLAMA_NUM_PREDICT,
+        },
     }
     body = json.dumps(payload).encode("utf-8")
     endpoint = OLLAMA_BASE_URL.rstrip("/") + "/api/chat"

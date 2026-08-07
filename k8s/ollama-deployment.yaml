@@ -24,7 +24,7 @@ spec:
               containerPort: 11434
           env:
             - name: OLLAMA_MODEL
-              value: llama3.2:1b
+              value: qwen2.5:0.5b
           command:
             - /bin/sh
             - -c

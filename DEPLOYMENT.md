@@ -78,8 +78,9 @@ The RAG app uses:
 ```text
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://ollama:11434
-OLLAMA_MODEL=llama3.2:1b
+OLLAMA_MODEL=qwen2.5:0.5b
 LLM_TIMEOUT_SECONDS=120
+OLLAMA_NUM_PREDICT=160
 ```
 
 No OpenAI API key is required for generated answers with this setup.

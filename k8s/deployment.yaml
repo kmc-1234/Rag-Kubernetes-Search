@@ -38,9 +38,11 @@ spec:
             - name: OLLAMA_BASE_URL
               value: http://ollama:11434
             - name: OLLAMA_MODEL
-              value: llama3.2:1b
+              value: qwen2.5:0.5b
             - name: LLM_TIMEOUT_SECONDS
               value: "120"
+            - name: OLLAMA_NUM_PREDICT
+              value: "160"
           readinessProbe:
             httpGet:
               path: /health

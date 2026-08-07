@@ -108,7 +108,7 @@ cp .env.example .env
 
 ```bash
 ollama serve
-ollama pull llama3.2:1b
+ollama pull qwen2.5:0.5b
 ```
 
 Then set:
@@ -116,7 +116,7 @@ Then set:
 ```bash
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=llama3.2:1b
+OLLAMA_MODEL=qwen2.5:0.5b
 ```
 
 Optional: add your OpenAI key to `.env` only if you want OpenAI-hosted answers:
@@ -285,7 +285,7 @@ http://ollama:11434
 Default open-source model:
 
 ```text
-llama3.2:1b
+qwen2.5:0.5b
 ```
 
 For full deployment steps, service access, document ingestion, and Sim.ai usage, see [DEPLOYMENT.md](DEPLOYMENT.md).
@@ -482,8 +482,9 @@ Environment variables:
 | `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
 | `LLM_PROVIDER` | `extractive` | Use `ollama`, `openai`, or `extractive` |
 | `OLLAMA_BASE_URL` | `http://ollama:11434` | Ollama API base URL |
-| `OLLAMA_MODEL` | `llama3.2:1b` | Ollama model used for answer generation |
+| `OLLAMA_MODEL` | `qwen2.5:0.5b` | Ollama model used for answer generation |
 | `LLM_TIMEOUT_SECONDS` | `120` | Timeout for generated answer requests |
+| `OLLAMA_NUM_PREDICT` | `160` | Maximum tokens Ollama should generate per answer |
 | `OPENAI_CHAT_MODEL` | `gpt-5-mini` | OpenAI chat model |
 | `CHUNK_SIZE` | `1000` | Characters per document chunk |
 | `CHUNK_OVERLAP` | `150` | Character overlap between chunks |
