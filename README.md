@@ -32,7 +32,7 @@ rag-kubernetes-search/
 │   ├── embeddings.py    # Local or OpenAI embedding model selection
 │   ├── loader.py        # Document loading and chunking
 │   ├── search.py        # ChromaDB ingestion and similarity search
-│   ├── llm.py           # OpenAI answer generation or extractive fallback
+│   ├── llm.py           # Ollama/OpenAI answer generation or extractive fallback
 │   └── prompts.py       # RAG prompt template
 ├── docs/
 │   ├── kubernetes/
@@ -55,7 +55,8 @@ rag-kubernetes-search/
 - Python 3.11 or 3.12
 - `pip`
 - Optional: Docker
-- Optional: OpenAI API key for generated answers
+- Optional: Ollama for open-source generated answers
+- Optional: OpenAI API key if you prefer OpenAI-hosted generated answers
 
 By default, the project uses Chroma's local ONNX MiniLM embedding model. The first ingest may take time because the model is downloaded.
 
@@ -103,14 +104,30 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-5. Optional: add your OpenAI key to `.env` if you want full generated answers:
+5. Optional: use Ollama if you want open-source generated answers:
 
 ```bash
+ollama serve
+ollama pull llama3.2:1b
+```
+
+Then set:
+
+```bash
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=llama3.2:1b
+```
+
+Optional: add your OpenAI key to `.env` only if you want OpenAI-hosted answers:
+
+```bash
+LLM_PROVIDER=openai
 OPENAI_API_KEY=sk-your-key
 OPENAI_CHAT_MODEL=gpt-5-mini
 ```
 
-If `OPENAI_API_KEY` is not set, the API still works, but `/ask` returns the most relevant retrieved context instead of calling an LLM.
+If no LLM provider is configured, the API still works, but `/ask` returns the most relevant retrieved context instead of calling an LLM.
 
 6. Start the API:
 
@@ -257,6 +274,18 @@ Deploy:
 
 ```bash
 kubectl apply -k k8s
+```
+
+The Kubernetes manifests include an Ollama deployment and service. The RAG API calls:
+
+```text
+http://ollama:11434
+```
+
+Default open-source model:
+
+```text
+llama3.2:1b
 ```
 
 For full deployment steps, service access, document ingestion, and Sim.ai usage, see [DEPLOYMENT.md](DEPLOYMENT.md).
@@ -451,6 +480,10 @@ Environment variables:
 | `COLLECTION_NAME` | `kubernetes_docs` | ChromaDB collection name |
 | `EMBEDDING_PROVIDER` | `local` | Use `local` or `openai` embeddings |
 | `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
+| `LLM_PROVIDER` | `extractive` | Use `ollama`, `openai`, or `extractive` |
+| `OLLAMA_BASE_URL` | `http://ollama:11434` | Ollama API base URL |
+| `OLLAMA_MODEL` | `llama3.2:1b` | Ollama model used for answer generation |
+| `LLM_TIMEOUT_SECONDS` | `120` | Timeout for generated answer requests |
 | `OPENAI_CHAT_MODEL` | `gpt-5-mini` | OpenAI chat model |
 | `CHUNK_SIZE` | `1000` | Characters per document chunk |
 | `CHUNK_OVERLAP` | `150` | Character overlap between chunks |

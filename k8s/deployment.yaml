@@ -33,6 +33,14 @@ spec:
               value: kubernetes_docs
             - name: TOP_K
               value: "5"
+            - name: LLM_PROVIDER
+              value: ollama
+            - name: OLLAMA_BASE_URL
+              value: http://ollama:11434
+            - name: OLLAMA_MODEL
+              value: llama3.2:1b
+            - name: LLM_TIMEOUT_SECONDS
+              value: "180"
           readinessProbe:
             httpGet:
               path: /health

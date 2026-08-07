@@ -3,6 +3,9 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - pvc.yaml
+  - ollama-pvc.yaml
+  - ollama-deployment.yaml
+  - ollama-service.yaml
   - deployment.yaml
   - service.yaml
 configMapGenerator:
