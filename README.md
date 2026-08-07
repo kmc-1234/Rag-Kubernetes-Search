@@ -483,7 +483,7 @@ Environment variables:
 | `LLM_PROVIDER` | `extractive` | Use `ollama`, `openai`, or `extractive` |
 | `OLLAMA_BASE_URL` | `http://ollama:11434` | Ollama API base URL |
 | `OLLAMA_MODEL` | `llama3.2:1b` | Ollama model used for answer generation |
-| `LLM_TIMEOUT_SECONDS` | `30` | Timeout for generated answer requests |
+| `LLM_TIMEOUT_SECONDS` | `120` | Timeout for generated answer requests |
 | `OPENAI_CHAT_MODEL` | `gpt-5-mini` | OpenAI chat model |
 | `CHUNK_SIZE` | `1000` | Characters per document chunk |
 | `CHUNK_OVERLAP` | `150` | Character overlap between chunks |

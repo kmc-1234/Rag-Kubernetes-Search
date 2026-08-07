@@ -40,7 +40,7 @@ spec:
             - name: OLLAMA_MODEL
               value: llama3.2:1b
             - name: LLM_TIMEOUT_SECONDS
-              value: "20"
+              value: "120"
           readinessProbe:
             httpGet:
               path: /health
